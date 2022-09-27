@@ -1,0 +1,4 @@
+provider: generic
+channel: latest
+url: 'https://your.cdn/update-path'
+updateCacheDirName: yourapp-updater
