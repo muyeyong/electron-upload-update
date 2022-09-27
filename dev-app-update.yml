@@ -1,4 +1,4 @@
 provider: generic
 channel: latest
-url: 'https://your.cdn/update-path'
+url: 'http://127.0.0.1:8877'
 updateCacheDirName: yourapp-updater

@@ -1,14 +1,3 @@
-// The built directory structure
-//
-// ├─┬ dist
-// │ ├─┬ electron
-// │ │ ├─┬ main
-// │ │ │ └── index.js
-// │ │ └─┬ preload
-// │ │   └── index.js
-// │ ├── index.html
-// │ ├── ...other-static-files-from-public
-// │
 process.env.DIST = join(__dirname, '../..')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST, '../public')
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
@@ -20,6 +9,63 @@ import fs from 'fs'
 import md5 from 'md5'
 import FormData from 'form-data'
 import { autoUpdater } from 'electron-updater'
+
+Object.defineProperty(app, 'isPackaged', {
+  get() {
+    return true;
+  }
+});
+
+autoUpdater.setFeedURL("http://127.0.0.1:8877")
+autoUpdater.autoDownload = false
+
+autoUpdater.checkForUpdates();
+// ipcMain.on("checkForUpdates", (e, arg) => {
+//   console.log('checkForUpdates')
+//   autoUpdater.checkForUpdates();
+// });
+
+autoUpdater.on("error", function (error) {
+  console.error(error)
+});
+
+autoUpdater.on("update-available", function (info) {
+  // 4. 告诉渲染进程有更新，info包含新版本信息
+  // mainWindow.webContents.send("updateAvailable", info);
+  console.log("update-available", info)
+});
+autoUpdater.on("update-not-available", function (info) {
+  console.log('info', info)
+})
+
+autoUpdater.on("download-progress", function (progressObj) {
+  // printUpdaterMessage('downloadProgress');
+  console.log('download-progress')
+  // mainWindow.webContents.send("downloadProgress", progressObj);
+});
+
+// 10. 下载完成，告诉渲染进程，是否立即执行更新安装操作
+autoUpdater.on("update-downloaded", function () {
+    // mainWindow.webContents.send("updateDownloaded");
+    // 12. 立即更新安装
+    ipcMain.on("updateNow", (e, arg) => {
+      autoUpdater.quitAndInstall();
+    });
+  }
+);
+
+function printUpdaterMessage(arg) {
+  let message = {
+    error: "更新出错",
+    checking: "正在检查更新",
+    updateAvailable: "检测到新版本",
+    downloadProgress: "下载中",
+    updateNotAvailable: "无新版本",
+  };
+  // mainWindow.webContents.send("printUpdaterMessage", message[arg]??arg);
+}
+
+
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()

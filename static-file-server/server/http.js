@@ -5,12 +5,8 @@ const config = require('./config')
 const route = require('./route')
 
 const server = http.createServer((request, response) => {
-  let filePath = path.join(config.root, request.url)
+  let filePath = path.join(config.root, request.url.split('?')[0])
   route(request, response, filePath)
-  // response.statusCode = 200
-  // response.setHeader('content-type', 'text/html')
-  // response.write(`<html><body><h1>Hello World! </h1><p>${filePath}</p></body></html>`)
-  // response.end()
 })
 
 server.listen(config.port, config.host, () => {
