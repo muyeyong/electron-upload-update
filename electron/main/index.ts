@@ -3,27 +3,33 @@ process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST, 
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
 import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron'
-import { release } from 'os'
+import { release, platform } from 'os'
 import { join } from 'path'
 import fs from 'fs'
 import md5 from 'md5'
 import FormData from 'form-data'
 import { autoUpdater } from 'electron-updater'
+import log from 'electron-log'
 
-Object.defineProperty(app, 'isPackaged', {
-  get() {
-    return true;
-  }
-});
+// Object.defineProperty(app, 'isPackaged', {
+//   get() {
+//     return true;
+//   }
+// });
 
-autoUpdater.setFeedURL("http://127.0.0.1:8877")
+autoUpdater.logger = log
+autoUpdater.setFeedURL({
+  provider: 'generic',
+  channel: platform() === 'darwin' ? 'latest' : 'latest-win32',
+  url: `http://127.0.0.1:8877`,
+})
 autoUpdater.autoDownload = false
 
-autoUpdater.checkForUpdates();
-// ipcMain.on("checkForUpdates", (e, arg) => {
-//   console.log('checkForUpdates')
-//   autoUpdater.checkForUpdates();
-// });
+// autoUpdater.checkForUpdates();
+ipcMain.on("checkForUpdates", (e, arg) => {
+  log.info("checkForUpdates", '开始检查更新')
+  autoUpdater.checkForUpdates();
+});
 
 autoUpdater.on("error", function (error) {
   console.error(error)
@@ -32,15 +38,17 @@ autoUpdater.on("error", function (error) {
 autoUpdater.on("update-available", function (info) {
   // 4. 告诉渲染进程有更新，info包含新版本信息
   // mainWindow.webContents.send("updateAvailable", info);
-  console.log("update-available", info)
+  log.info("update-available", info)
+  win.webContents.send('update-available', info)
 });
 autoUpdater.on("update-not-available", function (info) {
-  console.log('info', info)
+  log.info("update-not-available", info)
 })
 
 autoUpdater.on("download-progress", function (progressObj) {
+  log.info("download-progress", progressObj.percent)
   // printUpdaterMessage('downloadProgress');
-  console.log('download-progress')
+  // console.log('download-progress')
   // mainWindow.webContents.send("downloadProgress", progressObj);
 });
 
@@ -48,6 +56,7 @@ autoUpdater.on("download-progress", function (progressObj) {
 autoUpdater.on("update-downloaded", function () {
     // mainWindow.webContents.send("updateDownloaded");
     // 12. 立即更新安装
+    log.info("update-downloaded", '下载完成')
     ipcMain.on("updateNow", (e, arg) => {
       autoUpdater.quitAndInstall();
     });
@@ -174,7 +183,7 @@ ipcMain.on('uploadFile', (event, args) => {
           告诉渲染进程那个任务开始上传了，上传信息传递
          */
 
-        // win.webContents.send('uploadPiece', JSON.stringify(formdata))
+        win.webContents.send('uploadPiece', JSON.stringify(formdata))
         // console.log('pieces', pieces, formdata.getHeaders())
         if(startIndex < pieces - 1) {
           uploadPiece(startIndex + 1)

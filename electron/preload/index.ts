@@ -85,6 +85,11 @@ function uploadFile() {
   ipcRenderer.send('uploadFile')
 }
 
+function checkUpdate() {
+  // console.log('preload checkUpdate')
+  ipcRenderer.send('checkForUpdates')
+}
+
 // ----------------------------------------------------------------------
 
 const { appendLoading, removeLoading } = useLoading()
@@ -93,6 +98,7 @@ domReady().then(appendLoading)
 window.onmessage = ev => {
   ev.data.payload === 'removeLoading' && removeLoading()
   ev.data.payload === 'uploadFile' && uploadFile()
+  ev.data.payload === 'checkUpdate' && checkUpdate()
 }
 
 setTimeout(removeLoading, 4999)
