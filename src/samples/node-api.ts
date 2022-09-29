@@ -10,8 +10,9 @@ ipcRenderer.on('uploadPiece', (_event, format) => {
   console.log(JSON.parse(format))
 })
 
-ipcRenderer.on('update-available', (_event, info) => {
-  console.log('update-available', info)
+// printUpdaterMessage
+ipcRenderer.on('printUpdaterMessage', (_event, ...args) => {
+  console.log('[Receive update message]:', ...args)
 })
 
 

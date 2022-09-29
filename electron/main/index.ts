@@ -2,7 +2,7 @@ process.env.DIST = join(__dirname, '../..')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST, '../public')
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
-import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron'
+import { app, BrowserWindow, shell, ipcMain, dialog, globalShortcut } from 'electron'
 import { release, platform } from 'os'
 import { join } from 'path'
 import fs from 'fs'
@@ -10,12 +10,13 @@ import md5 from 'md5'
 import FormData from 'form-data'
 import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
+import { getElectronEnv } from '../utils/common'
 
-// Object.defineProperty(app, 'isPackaged', {
-//   get() {
-//     return true;
-//   }
-// });
+Object.defineProperty(app, 'isPackaged', {
+  get() {
+    return true;
+  }
+});
 
 autoUpdater.logger = log
 autoUpdater.setFeedURL({
@@ -23,7 +24,7 @@ autoUpdater.setFeedURL({
   channel: platform() === 'darwin' ? 'latest' : 'latest-win32',
   url: `http://127.0.0.1:8877`,
 })
-autoUpdater.autoDownload = false
+autoUpdater.autoDownload = true
 
 // autoUpdater.checkForUpdates();
 ipcMain.on("checkForUpdates", (e, arg) => {
@@ -32,29 +33,26 @@ ipcMain.on("checkForUpdates", (e, arg) => {
 });
 
 autoUpdater.on("error", function (error) {
-  console.error(error)
+  log.error("autoUpdater error", error)
 });
 
 autoUpdater.on("update-available", function (info) {
   // 4. 告诉渲染进程有更新，info包含新版本信息
-  // mainWindow.webContents.send("updateAvailable", info);
   log.info("update-available", info)
-  win.webContents.send('update-available', info)
+  printUpdaterMessage('updateAvailable');
 });
 autoUpdater.on("update-not-available", function (info) {
   log.info("update-not-available", info)
+  printUpdaterMessage('updateNotAvailable');
 })
 
 autoUpdater.on("download-progress", function (progressObj) {
   log.info("download-progress", progressObj.percent)
-  // printUpdaterMessage('downloadProgress');
-  // console.log('download-progress')
-  // mainWindow.webContents.send("downloadProgress", progressObj);
+  printUpdaterMessage('downloadProgress');
 });
 
 // 10. 下载完成，告诉渲染进程，是否立即执行更新安装操作
 autoUpdater.on("update-downloaded", function () {
-    // mainWindow.webContents.send("updateDownloaded");
     // 12. 立即更新安装
     log.info("update-downloaded", '下载完成')
     ipcMain.on("updateNow", (e, arg) => {
@@ -71,7 +69,8 @@ function printUpdaterMessage(arg) {
     downloadProgress: "下载中",
     updateNotAvailable: "无新版本",
   };
-  // mainWindow.webContents.send("printUpdaterMessage", message[arg]??arg);
+  // 通知是否更新
+  win.webContents.send("printUpdaterMessage", message[arg]??arg);
 }
 
 
@@ -104,12 +103,15 @@ async function createWindow() {
     },
   })
 
-  if (app.isPackaged) {
-    win.loadFile(indexHtml)
-  } else {
-    win.loadURL(url)
-    // win.webContents.openDevTools()
-  }
+  win.loadURL(url)
+  win.webContents.openDevTools()
+
+  // if (app.isPackaged) {
+  //   win.loadFile(indexHtml)
+  // } else {
+  //   win.loadURL(url)
+  //   win.webContents.openDevTools()
+  // }
 
   // Test actively push message to the Electron-Renderer
   win.webContents.on('did-finish-load', () => {

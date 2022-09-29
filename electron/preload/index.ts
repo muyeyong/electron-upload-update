@@ -86,7 +86,6 @@ function uploadFile() {
 }
 
 function checkUpdate() {
-  // console.log('preload checkUpdate')
   ipcRenderer.send('checkForUpdates')
 }
 

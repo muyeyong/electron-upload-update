@@ -13,11 +13,11 @@ export default (win: BrowserWindow) => {
   });
   autoUpdater.autoDownload = false
   
-  autoUpdater.checkForUpdates()
-  // ipcMain.on("checkForUpdates", (e, arg) => {
-  //   console.log('checkForUpdates')
-  //   autoUpdater.checkForUpdates();
-  // });
+  // autoUpdater.checkForUpdates()
+  ipcMain.on("checkForUpdates", (e, arg) => {
+    console.log('checkForUpdates')
+    autoUpdater.checkForUpdates();
+  });
 
   ipcMain.on('confirmUpdate', () => {
     autoUpdater.downloadUpdate()
@@ -30,8 +30,8 @@ export default (win: BrowserWindow) => {
   
   autoUpdater.on("update-available", function (info) {
     // 4. 告诉渲染进程有更新，info包含新版本信息
-    // win.webContents.send("updateAvailable", { info, other: '有可用的更新'});
     log.info("update-available", info)
+    win.webContents.send("updateAvailable", { info, other: '有可用的更新'});
   });
   autoUpdater.on("update-not-available", function (info) {
     printUpdaterMessage('updateNotAvailable');
