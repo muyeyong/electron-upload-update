@@ -226,4 +226,6 @@ ipcMain.handle('open-win', (event, arg) => {
 /* 
   根据不同平台打包
   选择文件
+
+  TODO 2022-09-29 不同平台打包  打包结果上传  
  */
