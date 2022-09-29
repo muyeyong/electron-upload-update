@@ -14,7 +14,7 @@ const App: React.FC = () => {
       <header className={styles.appHeader}>
         {/* 触发选择文件 */}
        <button onClick={uploadFile}>上传文件</button>
-       <Link to={'/a'}>跳转到检查更新</Link>
+       <Link to={'/check-upload'}>跳转到检查更新</Link>
       </header>
     </div>
   )

@@ -10,11 +10,6 @@ ipcRenderer.on('uploadPiece', (_event, format) => {
   console.log(JSON.parse(format))
 })
 
-// printUpdaterMessage
-ipcRenderer.on('printUpdaterMessage', (_event, ...args) => {
-  console.log('[Receive update message]:', ...args)
-})
-
 
 lstat(cwd()).then(stats => {
   console.log('[fs.lstat]', stats)

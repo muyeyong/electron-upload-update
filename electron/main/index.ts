@@ -2,7 +2,7 @@ process.env.DIST = join(__dirname, '../..')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST, '../public')
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
-import { app, BrowserWindow, shell, ipcMain, dialog, globalShortcut } from 'electron'
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron'
 import { release, platform } from 'os'
 import { join } from 'path'
 import fs from 'fs'
@@ -24,7 +24,7 @@ autoUpdater.setFeedURL({
   channel: platform() === 'darwin' ? 'latest' : 'latest-win32',
   url: `http://127.0.0.1:8877`,
 })
-autoUpdater.autoDownload = true
+autoUpdater.autoDownload = false
 
 // autoUpdater.checkForUpdates();
 ipcMain.on("checkForUpdates", (e, arg) => {
@@ -39,38 +39,45 @@ autoUpdater.on("error", function (error) {
 autoUpdater.on("update-available", function (info) {
   // 4. 告诉渲染进程有更新，info包含新版本信息
   log.info("update-available", info)
-  printUpdaterMessage('updateAvailable');
+  printUpdaterMessage('updateAvailable', info);
 });
 autoUpdater.on("update-not-available", function (info) {
   log.info("update-not-available", info)
-  printUpdaterMessage('updateNotAvailable');
+  printUpdaterMessage('updateNotAvailable', info);
+})
+
+ipcMain.on('confirmUpdate', () => {
+  autoUpdater.downloadUpdate()
 })
 
 autoUpdater.on("download-progress", function (progressObj) {
-  log.info("download-progress", progressObj.percent)
-  printUpdaterMessage('downloadProgress');
+  log.info("download-progress", progressObj)
+  printUpdaterMessage('downloadProgress', progressObj.percent);
 });
 
 // 10. 下载完成，告诉渲染进程，是否立即执行更新安装操作
 autoUpdater.on("update-downloaded", function () {
     // 12. 立即更新安装
+    printUpdaterMessage('download')
     log.info("update-downloaded", '下载完成')
     ipcMain.on("updateNow", (e, arg) => {
+      log.info('updateNow', '用户确定更新')
       autoUpdater.quitAndInstall();
     });
   }
 );
 
-function printUpdaterMessage(arg) {
+function printUpdaterMessage(type, info?) {
   let message = {
     error: "更新出错",
     checking: "正在检查更新",
     updateAvailable: "检测到新版本",
     downloadProgress: "下载中",
     updateNotAvailable: "无新版本",
+    download: "下载完成"
   };
   // 通知是否更新
-  win.webContents.send("printUpdaterMessage", message[arg]??arg);
+  win.webContents.send("printUpdaterMessage", message[type], info);
 }
 
 
