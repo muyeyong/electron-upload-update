@@ -1,11 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useCallback } from 'react'
 import styles from 'styles/app.module.scss'
 import { Link } from 'react-router-dom'
 import { ipcRenderer, IpcRendererEvent } from 'electron'
 import { Modal } from 'antd'
 
 const App: React.FC = () => {
-    const handleUpdateMessage = (_event: IpcRendererEvent, type: string, info: string) => {
+    const handleUpdateMessage = useCallback((_event: IpcRendererEvent, type: string, info: string) => {
         switch (type) {
             case '检测到新版本':
                 Modal.confirm({
@@ -15,18 +15,20 @@ const App: React.FC = () => {
                     },
                 })
                 break
-            case '下载完成': {
-                Modal.confirm({
-                    title: '立即更新',
-                    onOk: () => {
-                        ipcRenderer.send('updateNow')
-                    },
-                })
-            }
+            case '下载完成':
+                {
+                    Modal.confirm({
+                        title: '立即更新',
+                        onOk: () => {
+                            ipcRenderer.send('updateNow')
+                        },
+                    })
+                }
+                break
             default:
                 break
         }
-    }
+    }, [])
     useEffect(() => {
         ipcRenderer.on('printUpdaterMessage', handleUpdateMessage)
         return () => {

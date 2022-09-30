@@ -63,7 +63,7 @@ autoUpdater.on('update-downloaded', function () {
     // 12. 立即更新安装
     printUpdaterMessage('download')
     log.info('update-downloaded', '下载完成')
-    ipcMain.on('updateNow', (e, arg) => {
+    ipcMain.once('updateNow', (e, arg) => {
         log.info('updateNow', '用户确定更新')
         autoUpdater.quitAndInstall()
     })
