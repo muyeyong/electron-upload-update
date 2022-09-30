@@ -1,5 +1,26 @@
 {
-  "cSpell.words": [
-    "formdata"
-  ]
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "vue",
+    "typescript",
+    "typescriptreact"
+  ],
+  "editor.formatOnSave": true, // prettier：保存自动格式
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true // eslint --fix:保存自动修复fix
+  },
+  "vetur.format.defaultFormatter.js": "vscode-typescript",
+  "javascript.format.semicolons": "remove",
+  "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+  // 指定 *.vue 文件的格式化工具为vetur
+  "[vue]": {
+    "editor.defaultFormatter": "octref.vetur"
+  },
+  // 指定 *.js 文件的格式化工具为vscode自带
+  "[javascript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  // 默认使用prettier格式化支持的文件
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
 }
