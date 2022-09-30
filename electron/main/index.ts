@@ -12,11 +12,14 @@ import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 import { getElectronEnv } from '../utils/common'
 
-Object.defineProperty(app, 'isPackaged', {
-  get() {
-    return true;
-  }
-});
+if (!app.isPackaged) {
+  Object.defineProperty(app, 'isPackaged', {
+    get() {
+      return true;
+    }
+  });
+}
+
 
 autoUpdater.logger = log
 autoUpdater.setFeedURL({
@@ -110,15 +113,15 @@ async function createWindow() {
     },
   })
 
-  win.loadURL(url)
-  win.webContents.openDevTools()
+  // win.loadURL(url)
+  // win.webContents.openDevTools()
 
-  // if (app.isPackaged) {
-  //   win.loadFile(indexHtml)
-  // } else {
-  //   win.loadURL(url)
-  //   win.webContents.openDevTools()
-  // }
+  if (app.isPackaged) {
+    win.loadFile(indexHtml)
+  } else {
+    win.loadURL(url)
+    win.webContents.openDevTools()
+  }
 
   // Test actively push message to the Electron-Renderer
   win.webContents.on('did-finish-load', () => {

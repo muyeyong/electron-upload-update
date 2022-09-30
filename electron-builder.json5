@@ -3,7 +3,7 @@
  */
 {
   appId: "YourAppID",
-  productName: "YourAppName",
+  productName: "飞猫盘",
   copyright: "Copyright © 2022 ${author}",
   asar: true,
   directories: {

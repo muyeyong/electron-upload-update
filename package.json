@@ -2,14 +2,14 @@
   "name": "electron-upload-update",
   "productName": "Electron",
   "private": true,
-  "version": "2.0.0",
+  "version": "2.0.2",
   "description": "electron-upload-update",
-  "author": "muyeyong",
+  "author": "OnePgr, Inc <amsystango@gmail.com>",
   "license": "MIT",
   "main": "dist/electron/main/index.js",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && electron-builder"
+    "build": "tsc && vite build && electron-builder -mw"
   },
   "engines": {
     "node": "^14.18.0 || >=16.0.0"
