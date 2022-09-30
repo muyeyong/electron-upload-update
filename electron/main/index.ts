@@ -12,6 +12,7 @@ import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 import { getElectronEnv } from '../utils/common'
 
+// 测试用的
 if (!app.isPackaged) {
     Object.defineProperty(app, 'isPackaged', {
         get() {
@@ -109,15 +110,17 @@ async function createWindow() {
         },
     })
 
-    // win.loadURL(url)
-    // win.webContents.openDevTools()
+    // 测试使用
+    win.loadURL(url)
+    win.webContents.openDevTools()
 
-    if (app.isPackaged) {
-        win.loadFile(indexHtml)
-    } else {
-        win.loadURL(url)
-        win.webContents.openDevTools()
-    }
+    // 正式环境使用
+    // if (app.isPackaged) {
+    //     win.loadFile(indexHtml)
+    // } else {
+    //     win.loadURL(url)
+    //     win.webContents.openDevTools()
+    // }
 
     // Test actively push message to the Electron-Renderer
     win.webContents.on('did-finish-load', () => {
