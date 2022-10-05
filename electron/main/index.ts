@@ -230,4 +230,14 @@ ipcMain.handle('open-win', (event, arg) => {
   TODO 2022-09-29 不同平台打包  打包结果上传  
   TODO 2022-09-30 打包结果上传 打包目录清理
   TODO 2022-10-04 完善ipc通信 上传下载  代码混淆 一键优化全部代码格式
+    主进程给渲染进程发消息： 
+      ipcMain.callRender(browserWindow, channel, data?) browser 可以指定 也可以不指定
+    主进程给聚焦的渲染进程发消息：
+      ipcMain.callFocusedRenderer(channel, data?)
+    主进程回应渲染进程（ipcRenderer.callMain）： 
+      ipcMain.answerRenderer(browserWindow, channel, callback)
+    渲染进程发消息给主进程：
+      ipcRenderer.callMain(channel, data?)
+    渲染进程回应主进程：
+      ipcRenderer.answerMain(channel, callback)
  */
