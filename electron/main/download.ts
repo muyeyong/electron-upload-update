@@ -47,5 +47,7 @@ export default (win: BrowserWindow) => {
     })
  })
 }
-
-// TODO 2020-10-05 可中断下载 断点续传 都需要日志文件记录 使用electron-store
+/* TODO 2020-10-05 可中断下载 断点续传 都需要日志文件记录 使用electron-store 
+    每一个文件都有一个下载实例 new Download({ url, win }) 提供下载 删除 暂停 
+    进入读取文件，恢复
+**/
