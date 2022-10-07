@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import CheckUpload from './components/checkUpload'
 import ErrorPage from './components/error-page'
+import Download from './components/download'
 import './samples/node-api'
 import 'styles/index.css'
 import 'antd/dist/antd.css'
@@ -20,6 +21,10 @@ const router = createHashRouter([
   {
     path: '/check-upload',
     element: <CheckUpload />
+  },
+  {
+    path: '/download',
+    element: <Download />
   }
 ]);
 

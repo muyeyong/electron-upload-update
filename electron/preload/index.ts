@@ -89,6 +89,23 @@ function checkUpdate() {
   ipcRenderer.send('checkForUpdates')
 }
 
+async function  download(ev) {
+  console.log('preload download', ev)
+  const res = await ipcRenderer.invoke('download', ev.data.url)
+  console.log('preload res', res)
+}
+
+async function pauseDownload(ev) {
+  ipcRenderer.send('pauseDownload', ev.data.url)
+}
+
+async function resumeDownload(ev) {
+  ipcRenderer.send('resumeDownload', ev.data.url)
+}
+
+async function cancelDownload(ev) {
+  ipcRenderer.send('cancelDownload', ev.data.url)
+}
 // ----------------------------------------------------------------------
 
 const { appendLoading, removeLoading } = useLoading()
@@ -98,6 +115,10 @@ window.onmessage = ev => {
   ev.data.payload === 'removeLoading' && removeLoading()
   ev.data.payload === 'uploadFile' && uploadFile()
   ev.data.payload === 'checkUpdate' && checkUpdate()
+  ev.data.payload === 'download' && download(ev)
+  ev.data.payload === 'pauseDownload' && pauseDownload(ev)
+  ev.data.payload === 'cancelDownload' && resumeDownload(ev)
+  ev.data.payload === 'resumeDownload' && cancelDownload(ev)
 }
 
 setTimeout(removeLoading, 4999)

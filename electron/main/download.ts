@@ -8,16 +8,17 @@ const downloads = new Map<string, Item>()
 const createDownload =  (args: { url: string, win: BrowserWindow}) => {
     const { url, win} = args
     const onCancelled = (...args) => {
-        console.log('cancelled')
+        console.log('cancelled', args)
     }
     const onCompleted = (...args) => {
-        console.log('onCompleteed')
+        console.log('onCompleteed', args)
+        downloads.delete(args[0])
     }
     const onInterrupted = (...args) => {
-        console.log('onInterrupted')
+        console.log('onInterrupted', args)
     }
     const onProgressing = (...args) => {
-        console.log('onPregressing')
+        console.log('onPregressing', args)
     }
     const exist = downloads.get(url)
     if (exist) {

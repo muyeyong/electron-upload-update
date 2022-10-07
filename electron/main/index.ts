@@ -11,6 +11,7 @@ import FormData from 'form-data'
 import { autoUpdater } from 'electron-updater'
 import log from 'electron-log'
 import { getElectronEnv } from '../utils/common'
+import { createDownload, pauseDownload, cancelDownload} from './downLoad'
 
 // 测试用的
 if (!app.isPackaged) {
@@ -205,6 +206,12 @@ ipcMain.on('uploadFile', (event, args) => {
         }
         uploadPiece(0)
     }
+})
+
+ipcMain.handle('download', (event, args) => {
+    console.log('main download args', args)
+    createDownload({ url: args, win })
+    return '2333'
 })
 
 // new window example arg: new windows url

@@ -59,8 +59,11 @@ export default class Item {
         })
         if (!filePaths) return
         const savePath = filePaths[0]
+       
         this.win.webContents.downloadURL(this.downloadUrl)
-        this.win.webContents.session.on('will-download',() => {
+        this.win.webContents.session.on('will-download',(e, item) => {
+            this.downloadItem = item
+            console.log('savaPath', savePath, this.downloadItem.getFilename())
             this.downloadItem.setSavePath(path.join(savePath, this.downloadItem.getFilename()))
             this.downloadItem.on('updated', (evt, state) => {
                 let value = 0
